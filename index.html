@@ -1,125 +1,274 @@
 <!DOCTYPE html>
-<html lang="en">
-
-  <head>
-    <meta charset="UTF-8">
-    <title>Untitled</title>
-    <link rel="stylesheet" href="./style.css">
-
-  </head>
-    
-  <body>
-  <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Controle de Parcelas</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link rel="stylesheet" href="style.css">
+<title>Controle de Parcelas</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f2f5f9;
+margin:0;
+padding:20px;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+background:white;
+padding:20px;
+border-radius:15px;
+box-shadow:0 0 10px rgba(0,0,0,.15);
+}
+
+h1{
+text-align:center;
+color:#2c3e50;
+}
+
+.info{
+background:#eef6ff;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:20px;
+}
+
+th,td{
+padding:12px;
+text-align:center;
+border-bottom:1px solid #ddd;
+}
+
+button{
+padding:8px 15px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.pago{
+background:#2ecc71;
+color:white;
+}
+
+.naoPago{
+background:#e74c3c;
+color:white;
+}
+
+.concluida{
+background:#d4edda;
+}
+
+.progresso{
+width:100%;
+height:25px;
+background:#ddd;
+border-radius:20px;
+overflow:hidden;
+margin-top:15px;
+}
+
+#barra{
+height:100%;
+width:0%;
+background:#2ecc71;
+transition:.3s;
+}
+
+.reset{
+margin-top:20px;
+background:#e74c3c;
+color:white;
+width:100%;
+padding:15px;
+font-size:16px;
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
 
-    <h1>💰 Controle de Parcelas</h1>
+<h1>💳 Controle de Parcelas</h1>
 
-    <div class="resumo">
+<div class="info">
 
-        <div class="card">
-            <h3>Total</h3>
-            <p id="valorTotal">R$ 3.867.83</p>
-        </div>
+<h3>Resumo</h3>
 
-        <div class="card">
-            <h3>Pago</h3>
-            <p id="valorPago">R$ 0,00</p>
-      </div>
+<p>Valor da parcela: <b>R$483,00</b></p>
+<p>Guilherme paga: <b>R$241,50</b></p>
+<p>Giovanna paga: <b>R$241,50</b></p>
 
-    </div>
+<p id="resumo"></p>
 
-    <div class="progresso">
-        <div id="barra"></div>
-    </div>
-
-    <h2>Parcelas de R$ 483,00</h2>
-
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>Parcela</th>
-                <th>Valor</th>
-                <th>Guilherme</th>
-                <th>Giovanna</th>
-                <th>Status</th>
-            </tr>
-
-        </thead>
-
-        <tbody id="parcelas483">
-
-        </tbody>
-
-    </table>
-
-    <h2>Parcelas de R$ 241,50</h2>
-
-    <table>
-
-        <thead>
-
-            <tr>
-                <th>Parcela</th>
-                <th>Valor</th>
-                <th>Guilherme</th>
-                <th>Giovanna</th>
-                <th>Status</th>
-            </tr>
-
-        </thead>
-
-        <tbody id="parcelas241">
-
-        </tbody>
-
-    </table>
-
-    <div class="botoes">
-
-        <button id="marcarTudo">
-            Marcar Tudo Pago
-        </button>
-
-        <button id="desfazerTudo">
-            Desfazer Tudo
-        </button>
-
-        <button id="resetar">
-            Resetar Parcelas
-        </button>
-
-    </div>
-
-    <h2>Histórico</h2>
-
-    <div id="historico">
-
-    </div>
+<div class="progresso">
+<div id="barra"></div>
+</div>
 
 </div>
 
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<table>
 
-<script src="firebase.js"></script>
-<script src="script.js"></script>
+<thead>
+
+<tr>
+<th>Parcela</th>
+<th>Valor</th>
+<th>Guilherme</th>
+<th>Giovanna</th>
+<th>Status</th>
+</tr>
+
+</thead>
+
+<tbody id="tabela"></tbody>
+
+</table>
+
+<button class="reset" onclick="limparTudo()">🗑 Limpar Tudo</button>
+
+</div>
+
+<script>
+
+let dados = JSON.parse(localStorage.getItem("parcelas"));
+
+if(!dados){
+
+dados=[];
+
+for(let i=1;i<=8;i++){
+
+dados.push({
+guilherme:false,
+giovanna:false
+});
+
+}
+
+}
+
+function salvar(){
+
+localStorage.setItem("parcelas",JSON.stringify(dados));
+
+}
+
+function atualizar(){
+
+const tabela=document.getElementById("tabela");
+
+tabela.innerHTML="";
+
+let concluidas=0;
+
+let pagoG=0;
+let pagoGi=0;
+
+dados.forEach((p,index)=>{
+
+let status="Pendente";
+
+if(p.guilherme) pagoG+=241.50;
+if(p.giovanna) pagoGi+=241.50;
+
+if(p.guilherme && p.giovanna){
+status="✅ Concluída";
+concluidas++;
+}
+
+tabela.innerHTML+=`
+
+<tr class="${status=="✅ Concluída"?"concluida":""}">
+
+<td>${index+1}/8</td>
+
+<td>R$483,00</td>
+
+<td>
+
+<button class="${p.guilherme?"pago":"naoPago"}"
+
+onclick="toggle(${index},'guilherme')">
+
+${p.guilherme?"Pago":"Pendente"}
+
+</button>
+
+</td>
+
+<td>
+
+<button class="${p.giovanna?"pago":"naoPago"}"
+
+onclick="toggle(${index},'giovanna')">
+
+${p.giovanna?"Pago":"Pendente"}
+
+</button>
+
+</td>
+
+<td>${status}</td>
+
+</tr>
+
+`;
+
+});
+
+let restante=(8-concluidas)*483;
+
+document.getElementById("resumo").innerHTML=`
+<b>Parcelas concluídas:</b> ${concluidas}/8<br><br>
+
+<b>Guilherme pagou:</b> R$ ${pagoG.toFixed(2)}<br>
+
+<b>Giovanna pagou:</b> R$ ${pagoGi.toFixed(2)}<br><br>
+
+<b>Falta pagar:</b> R$ ${restante.toFixed(2)}
+`;
+
+document.getElementById("barra").style.width=(concluidas/8*100)+"%";
+
+salvar();
+
+}
+
+function toggle(i,pessoa){
+
+dados[i][pessoa]=!dados[i][pessoa];
+
+atualizar();
+
+}
+
+function limparTudo(){
+
+if(confirm("Deseja apagar todos os pagamentos?")){
+
+localStorage.removeItem("parcelas");
+
+location.reload();
+
+}
+
+}
+
+atualizar();
+
+</script>
 
 </body>
-</html>
-    <script  src="./script.js"></script>
-
-  </body>
-  
 </html>
