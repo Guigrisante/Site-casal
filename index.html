@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Parcelas</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>💰 Controle de Parcelas</h1>
+
+    <div class="resumo">
+
+        <div class="card">
+            <h3>Total</h3>
+            <p id="valorTotal">R$ 3.867.83</p>
+        </div>
+
+        <div class="card">
+            <h3>Pago</h3>
+            <p id="valorPago">R$ 0,00</p>
+      </div>
+
+    </div>
+
+    <div class="progresso">
+        <div id="barra"></div>
+    </div>
+
+    <h2>Parcelas de R$ 483,00</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Parcela</th>
+                <th>Valor</th>
+                <th>Guilherme</th>
+                <th>Giovanna</th>
+                <th>Status</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="parcelas483">
+
+        </tbody>
+
+    </table>
+
+    <h2>Parcelas de R$ 241,50</h2>
+
+    <table>
+
+        <thead>
+
+            <tr>
+                <th>Parcela</th>
+                <th>Valor</th>
+                <th>Guilherme</th>
+                <th>Giovanna</th>
+                <th>Status</th>
+            </tr>
+
+        </thead>
+
+        <tbody id="parcelas241">
+
+        </tbody>
+
+    </table>
+
+    <div class="botoes">
+
+        <button id="marcarTudo">
+            Marcar Tudo Pago
+        </button>
+
+        <button id="desfazerTudo">
+            Desfazer Tudo
+        </button>
+
+        <button id="resetar">
+            Resetar Parcelas
+        </button>
+
+    </div>
+
+    <h2>Histórico</h2>
+
+    <div id="historico">
+
+    </div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<script src="firebase.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
